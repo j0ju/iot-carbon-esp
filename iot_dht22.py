@@ -1,4 +1,6 @@
-# vim: sw=4 ts=4 ft=python et
+# LICENSE: GPLv2, see attached License
+# Author: Joerg Jungermann
+
 import iot_carbon_client
 
 PIN = 4
@@ -39,3 +41,4 @@ def measure_n_send(sock, send_cb):
     v = round(machine.ADC(1).read()/1000, 3)
     send_cb(sock, 'Vcc', v)
 
+# vim: sw=4 ts=4 ft=python et

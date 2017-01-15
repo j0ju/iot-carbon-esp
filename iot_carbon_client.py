@@ -1,4 +1,5 @@
-# vim: sw=4 ts=4 ft=python et
+# LICENSE: GPLv2, see attached License
+# Author: Joerg Jungermann
 
 INTERVAL = 45
 ERROR_WAIT = 1
@@ -70,3 +71,4 @@ def sleep(sec, deepsleep = False):
         print("sleep:", sec, "s")
         time.sleep(sec)
 
+# vim: sw=4 ts=4 ft=python et
