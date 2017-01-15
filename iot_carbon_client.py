@@ -1,8 +1,9 @@
 # vim: sw=4 ts=4 ft=python et
 
-INTERVAL = 60
-ERROR_WAIT = 5
+INTERVAL = 45
+ERROR_WAIT = 1
 METRIC_FMT = "iot.by-id.%s.%s %s" # MAC, metric, value
+RETRIES = 3
 
 def get_mac():
     from network import WLAN
@@ -18,33 +19,38 @@ def carbon_client(server = "8.8.8.8", port = 2003, deepsleep = False, measure_n_
 
     while True:
         while not wifi.isconnected(): 
-            print ("wait for wifi ...")
+            print ("wifi: waiting for ...")
             sleep(ERROR_WAIT)
-        print ("wifi.isconnected", wifi.isconnected())
-        print ("wifi ", wifi.ifconfig())
+        print ("wifi.isconnected: ", wifi.isconnected())
+        print ("wifi: ", wifi.ifconfig())
 
-        try:
-            sock = socket.socket()
-            sock.connect( socket.getaddrinfo(server, port)[0][-1] )
+        for i in range(1, RETRIES):
+            try:
+                sock = socket.socket()
+                sock.connect( socket.getaddrinfo(server, port)[0][-1] )
 
-            if measure_n_send_cb != None:
-                measure_n_send_cb(sock, send_cb)
+                if measure_n_send_cb != None:
+                    measure_n_send_cb(sock, send_cb)
 
-            sock.close()
-            sock = None
-            gc.collect()
+                sock.close()
+                sock = None
+                gc.collect()
+                
+                print("connection succeded: try", i)
+                break
 
-            sleep(interval, deepsleep)
-        except Exception as e:
-            print(e)
-            sleep(ERROR_WAIT)
+            except Exception as e:
+                print("sending failed:", e)
+                sleep(ERROR_WAIT)
+        
+        sleep(interval, deepsleep)
 
 def send_cb(sock, metric, value):
     import gc
 
     mac = get_mac()
     m = METRIC_FMT % ( mac, metric, value)
-    print(m)
+    print("send: ", m)
     sock.write(m)
     sock.write(b'\n')
     m = None
@@ -56,9 +62,11 @@ def sleep(sec, deepsleep = False):
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
         rtc.alarm(rtc.ALARM0, sec * 1000)
-        print("deepsleep", sec, "s")
+        print("sleep:", sec, "s (DEEP SLEEP)")
         machine.deepsleep()
+        time.sleep_us(100)
     else:
         import time
+        print("sleep:", sec, "s")
         time.sleep(sec)
 

@@ -3,7 +3,7 @@ import iot_carbon_client
 
 PIN = 4
 
-def client(server = "8.8.8.8", port = 2003, deepsleep = False, interval = 60):
+def client(server = "8.8.8.8", port = 2003, deepsleep = False, interval = 45):
     iot_carbon_client.carbon_client(server, port, deepsleep, measure_n_send, interval)
 
 def dew_point(celsius, humidity):
@@ -33,6 +33,9 @@ def measure_n_send(sock, send_cb):
     d = round(dew_point(t, h), 1)
     send_cb(sock, 'dew_point', d)
 
+    # this needs executed once
+    #   import adc_mode
+    #   adc_mode.set(adc_mode.ADC_MODE_VCC)
     v = round(machine.ADC(1).read()/1000, 3)
     send_cb(sock, 'Vcc', v)
 

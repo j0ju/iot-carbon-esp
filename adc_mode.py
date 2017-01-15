@@ -1,8 +1,18 @@
-#import machine
-#vcc = machine.ADC(1)
-#vcc.read()
+# set_adc_mode makes reading Vcc possible
+#
+# example:
+#    import machine
+#    vcc = machine.ADC(1)
+#    vcc.read()
+#
+# See
+#    https://github.com/micropython/micropython/issues/2352
 
-#https://github.com/micropython/micropython/issues/2352
+# to enable Vcc read, execute once
+#
+# import adc_mode
+# adc_mode.set(adc_mode.ADC_MODE_VCC)
+#
 
 import esp
 from flashbdev import bdev
@@ -11,9 +21,9 @@ import machine
 ADC_MODE_VCC = 255
 ADC_MODE_ADC = 0
 
-def set_adc_mode(mode):
+def set(mode):
     sector_size = bdev.SEC_SIZE
-    flash_size = esp.flash_size() # device dependent
+    flash_size = esp.flash_size()
     init_sector = int(flash_size / sector_size - 4)
     data = bytearray(esp.flash_read(init_sector * sector_size, sector_size))
     if data[107] == mode:
