@@ -14,14 +14,14 @@
 # adc_mode.set(adc_mode.ADC_MODE_VCC)
 #
 
-import esp
-from flashbdev import bdev
-import machine
-
 ADC_MODE_VCC = 255
 ADC_MODE_ADC = 0
 
 def set(mode):
+    import esp
+    from flashbdev import bdev
+    import machine
+
     sector_size = bdev.SEC_SIZE
     flash_size = esp.flash_size()
     init_sector = int(flash_size / sector_size - 4)
@@ -35,3 +35,4 @@ def set(mode):
         print("ADC mode changed in flash; restart to use it!")
         return
 
+# vim: sw=4 ts=4 ft=python et foldmethod=indent
