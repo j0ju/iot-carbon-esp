@@ -1,7 +1,7 @@
 # LICENSE: GPLv2, see attached License
 # Author: Joerg Jungermann
 
-METRIC_FMT = "iot.by-id.%s.%s %s" # MAC, metric, value
+import CONFIG
 
 def get_mac():
     from network import WLAN
@@ -15,11 +15,13 @@ def sleep(sec, deepsleep = False):
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
         rtc.alarm(rtc.ALARM0, sec * 1000)
-        print("sleep:", sec, "s (DEEP SLEEP)")
+        if CONFIG.DEBUG:
+            print("sleep:", sec, "s (DEEP SLEEP)")
         machine.deepsleep()
         time.sleep_us(100)
     else:
-        print("sleep:", sec, "s")
+        if CONFIG.DEBUG:
+            print("sleep:", sec, "s")
         time.sleep(sec)
 
 # vim: sw=4 ts=4 ft=python et foldmethod=indent

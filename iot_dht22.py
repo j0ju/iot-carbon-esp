@@ -1,11 +1,17 @@
 # LICENSE: GPLv2, see attached License
 # Author: Joerg Jungermann
 
-PIN = 4
-INTERVAL = 47
-DEEPSLEEP = True
-RETRIES = 3
-ERROR_WAIT = 1
+# global config
+import CONFIG
+
+# DHT22 config
+PIN        = 4
+POWER_PIN  = 5
+    
+import machine
+import iot_carbon as carbon
+import dht
+import iot
 
 # reference: http://en.wikipedia.org/wiki/Dew_point
 # delta max = 0.6544 wrt dewPoint()
@@ -17,7 +23,14 @@ def dew_point(celsius, humidity):
     temp = (a * celsius) / (b + celsius) + log(humidity*0.01)
     return (b * temp) / (a - temp);
 
-def get_dht22(pin, retries = RETRIES):
+def dht22_powerup(pin):
+    p = machine.Pin(pin, machine.Pin.OUT)
+    p.value(1)
+def dht22_powerdown(pin):
+    p = machine.Pin(pin, machine.Pin.OUT)
+    p.value(0)
+
+def dht22_get(pin, retries = CONFIG.RETRIES):
     import machine
     for i in range(1, retries):
         try:
@@ -27,17 +40,17 @@ def get_dht22(pin, retries = RETRIES):
         except Exception as e:
             import time
             s = None
-            time.sleep(ERROR_WAIT)
+            time.sleep(CONFIG.ERROR_WAIT)
     return s
 
-while True:
-    import carbon
-    import dht
-    import machine
-    import iot
+if CONFIG.DEBUG:
+    if machine.reset_cause() == machine.DEEPSLEEP_RESET:
+        print('sleep: awoke from DEEP SLEEP')
 
-    c = carbon.client()
-    s = get_dht22(PIN, RETRIES)
+c = carbon.client()
+dht22_powerup(POWER_PIN)
+while True:
+    s = dht22_get(PIN, CONFIG.RETRIES)
          
     t = s.temperature()
     h = s.humidity()
@@ -47,11 +60,6 @@ while True:
     #   adc_mode.set(adc_mode.ADC_MODE_VCC)
     v = machine.ADC(1).read()/1000
     
-    t = "%.1f" % ( t )
-    h = "%.1f" % ( h )
-    d = "%.1f" % ( d )
-    v = "%.3f" % ( v )
-
     carbon.send(c, 'Vcc', v)
     carbon.send(c, 'temperature', t)
     carbon.send(c, 'humidity', h)
@@ -59,9 +67,9 @@ while True:
 
     c.close()
 
-    iot.sleep(INTERVAL, DEEPSLEEP)
-
     import gc
     gc.collect()
+    
+    iot.sleep(CONFIG.INTERVAL, CONFIG.DEEPSLEEP)
 
 # vim: sw=4 ts=4 ft=python et foldmethod=indent
