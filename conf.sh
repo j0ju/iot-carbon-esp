@@ -8,10 +8,7 @@ export RSHELL_PORT="/dev/$DEV"
 
 (
   echo "open $DEV"
-  for py in *.py; do
-    case "$py" in
-      main.py | CONFIG.py ) continue ;;
-    esac
+  for py in main.py CONFIG.py; do
     echo "put $py"
     echo $py >&2
   done
