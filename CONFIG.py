@@ -1,7 +1,7 @@
 INTERVAL   = 53
 
-#DEEPSLEEP  = False
-DEEPSLEEP  = True
+DEEPSLEEP  = False
+#DEEPSLEEP  = True
 
 RETRIES    = 3
 ERROR_WAIT = 1
