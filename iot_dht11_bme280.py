@@ -52,23 +52,17 @@ powerup(POWER_PIN)
 c = carbon.client()
 dht = dht_get(DHT_PIN, CONFIG.RETRIES)
 i2c = machine.I2C(scl=machine.Pin(I2C_SCL_PIN), sda=machine.Pin(I2C_SDA_PIN))
+bme = bme280.BME280(i2c=i2c)
 
 while True:
-    bme = bme280.BME280(i2c=i2c)
 
     (t, p, h) = bme.read_compensated_data()
 
-    t = t/100    # C
-    p = p/25600 # hPa
-
-    h = dht.humidity() # rel%
-
-    d = dew_point(t, h)
-
-    # this needs executed once
-    #   import adc_mode
-    #   adc_mode.set(adc_mode.ADC_MODE_VCC)
-    v = machine.ADC(1).read()/1000
+    t = t/100                      # C
+    p = p/25600                    # hPa
+    h = dht.humidity()             # rel%
+    d = dew_point(t, h)            # C
+    v = machine.ADC(1).read()/1000 # V
 
     carbon.send(c, 'Vcc', v)
     carbon.send(c, 'temperature', t)
@@ -79,7 +73,6 @@ while True:
     c.close()
 
     if CONFIG.DEBUG:
-        bme = None
         import gc
         gc.collect()
         import micropython

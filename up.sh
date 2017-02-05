@@ -13,8 +13,12 @@ if [ "$1" = -f ]; then
     shift
 fi
 
+if ! [ "$#" = 0 ]; then
+    FORCE=yes
+fi
+
 (   echo "open $DEV"
-    for py in ${*:-*.py}${*:+"$@"}; do
+    for py in ${*:-*.py}; do
         if ! [ "$FORCE" = yes ]; then
             case "$py" in
                 main.py | CONFIG.py ) continue ;;
@@ -27,4 +31,5 @@ fi
 ) | \
     mpfshell --nocolor --nocache
 
+echo
 # vim: ft=sh sw=4 ts=4 et
