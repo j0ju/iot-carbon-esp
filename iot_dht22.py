@@ -5,8 +5,8 @@
 import CONFIG
 
 # DHT22 config
-PIN        = 4
-POWER_PIN  = 5
+PIN        = 0
+POWER_PIN  = 2
     
 import machine
 import iot_carbon as carbon
