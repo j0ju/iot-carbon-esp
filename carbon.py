@@ -1,28 +1,27 @@
 # LICENSE: GPLv2, see attached License
 # Author: Joerg Jungermann
 
-import CONFIG
+METRIC_FMT = b'iot.by-id.%s.%s %s' # MAC, metric, value
 
-def client(server = "203.0.113.1", port = 2003, RETRIES = CONFIG.RETRIES, ERROR_WAIT = CONFIG.ERROR_WAIT):
+def client( server = '203.0.113.1',
+            port = 2003,
+            RETRIES = 3, ERROR_WAIT = 1 ):
     import network
     import time
     wifi = network.WLAN(network.STA_IF)
 
-    while not wifi.isconnected(): 
-        if CONFIG.DEBUG:
-            print ("wifi: waiting for ...")
+    while not wifi.isconnected():
+        print (b'wifi: waiting for ...')
         time.sleep(ERROR_WAIT)
-    if CONFIG.DEBUG:
-        print ("wifi.isconnected: ", wifi.isconnected())
-        print ("wifi: ", wifi.ifconfig())
+        print (b'wifi.isconnected: ', wifi.isconnected())
+        print (b'wifi: ', wifi.ifconfig())
 
     import socket
     for i in range(1, RETRIES):
         try:
             s = socket.socket()
             s.connect( socket.getaddrinfo(server, port)[0][-1] )
-            if CONFIG.DEBUG:
-                print ("connected: ", server, " port", port, "(try", i, ")")
+            print (b'connected: ', server, b' port', port, b'(try', i, b')')
             break
         except Exception as e:
             s = None
@@ -37,9 +36,8 @@ def send(sock, metric, value):
     from iot import get_mac
 
     mac = get_mac()
-    m = CONFIG.METRIC_FMT % ( mac, metric, value )
-    if CONFIG.DEBUG:
-        print("send: ", m)
+    m = METRIC_FMT % ( mac, metric, value )
+    print('send: ', m)
     sock.write(m)
     sock.write(b'\n')
     m = None
