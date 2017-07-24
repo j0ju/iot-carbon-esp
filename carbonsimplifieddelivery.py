@@ -3,6 +3,7 @@
 
 import socket
 import iotesp
+import network
 
 class CarbonSimplifiedDelivery():
     def __init__(self, template=None, server=None, port=2003):
@@ -15,6 +16,7 @@ class CarbonSimplifiedDelivery():
         self.debug = False
         self.id = iotesp.get_mac()
         self.deliverNonNumericValues = False
+        self.sta_if = network.WLAN(network.STA_IF)
 
         if template:
             self.template = template
@@ -40,15 +42,20 @@ class CarbonSimplifiedDelivery():
 
         for i in range(1, self.retries):
             try:
+                if not self.sta_if.isconnected():
+                    if self.debug:
+                        print("CarbonDelivery.send(): wifi is not connected.")
+                    iotesp.sleep(self.error_wait)
+                    continue
                 if not self.sock:
                     self.connect()
                 if self.server:
                     self.sock.send(send_string + '\n')
                 break
             except Exception as e:
-                print("CarbonDelivery.send(): Exception:")
-                print(e)
+                print("CarbonDelivery.send(): Exception:", e)
                 self.sock = None
+                iotesp.sleep(self.error_wait)
 
     def connect(self, server=None, port=2003):
         if server:
