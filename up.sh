@@ -19,11 +19,6 @@ fi
 
 (   echo "open $DEV"
     for py in ${*:-*.py}; do
-        if ! [ "$FORCE" = yes ]; then
-            case "$py" in
-                main.py | CONFIG.py ) continue ;;
-            esac
-        fi
         echo "put $py"
         echo "up $py" >&2
     done

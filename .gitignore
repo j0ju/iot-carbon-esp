@@ -1,7 +1,2 @@
-.port
-
-main.py
-CONFIG.py
-
 *.pyc
 *.sw?
