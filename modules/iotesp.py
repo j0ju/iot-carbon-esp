@@ -13,11 +13,11 @@ def sleep(sec, deepsleep = False):
         rtc = machine.RTC()
         rtc.irq(trigger=rtc.ALARM0, wake=machine.DEEPSLEEP)
         rtc.alarm(rtc.ALARM0, sec * 1000)
-        print('deep sleep:', sec, 's')
+        print('iotesp.sleep():', sec, 's / DEEPSLEEP')
         machine.deepsleep()
         time.sleep_us(100)
     else:
-        print('sleep:', sec, 's')
+        # print('sleep:', sec, 's')
         time.sleep(sec)
 
 # vim: sw=4 ts=4 ft=python et foldmethod=indent
