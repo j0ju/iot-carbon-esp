@@ -29,7 +29,7 @@ class Bme280Sensor():
         elif key == 'pressure':
             return p
         elif key == 'dew_point':
-            # broken humidity sensor
+            # BMP280 has not an humidity sensor
             if h == 0:
                 return float('nan')
             else:
