@@ -67,6 +67,8 @@ class CarbonSimplifiedDelivery():
             self.sock.connect(socket.getaddrinfo(self.server, port)[0][-1])
 
     def close(self):
+        # wait for WiFi firmware to transmit all packets
+        iotesp.sleep(self.error_wait)
         if self.sock:
             self.sock.close()
         self.sock = None
