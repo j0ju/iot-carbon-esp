@@ -16,7 +16,9 @@ class Dht22Sensor():
         try:
             self.dht.measure()
         except Exception as e:
-            self.dht.measure()
+            try:
+                self.dht.measure()
+            except Exception as e:
 
         return [ 'temperature', 'humidity', 'dew_point' ]
 
